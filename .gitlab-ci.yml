@@ -2,7 +2,5 @@ stages:
   - test
 
 test:
-  tags:
-    - pyth
   script:
     - echo "Building Python project"
