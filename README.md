@@ -2,7 +2,7 @@
 _________________________________
 **<p align="center"> Wroc³aw University of Science and Technology </p>**
 **<p align="center"> Computer Science, Faculty of Electronics, 6 semester </p>**
-<p align="center"> Rados³aw Lis, 241385 </p>
+**<p align="center"> Rados³aw Lis </p>**
 
 # Table of Contents
 - [General info](#desc)
@@ -10,5 +10,5 @@ _________________________________
 # General info
 Desktop, Python application with algorithm for calculating best move based on the current board setting and user letters. 
 ______________________________
-**master** - production,
+**master** - production,  
 **develop** - works
