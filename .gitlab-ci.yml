@@ -1,9 +1,7 @@
 stages:
-  - pages
   - test
 
-pages:
-  stage: test
+test:
   tags:
     - pyth
   script:
