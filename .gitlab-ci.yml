@@ -5,6 +5,6 @@ stages:
 pages:
   stage: test
   tags:
-    - pyth
+    -pyth
   script:
     - echo "Building Python project"
