@@ -1,9 +1,10 @@
+stages:
+  - pages
+  - test
+
 pages:
- stage: deploy
- tags:
- — pyth
- script:
- # run PowerShell Command
- — powershell -Command “Get-Date”
- # run PowerShell script
- — powershell -File copyFiles.ps1
+  stage: test
+  tags:
+    - pyth
+  script:
+    - echo "Building Python project"
