@@ -11,4 +11,4 @@ _________________________________
 Desktop, Python application with algorithm for calculating best move based on the current board setting and user letters. 
 ______________________________
 **master** - production,  
-**develop** - works
+**develop** - works.
