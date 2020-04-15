@@ -21,5 +21,4 @@ $ git push --mirror
 ```
  <a name="stat"></a>
 # Status
-**master** - production,  
-**develop** - works.
+**master** - work in progress!
