@@ -1,9 +1,7 @@
 import sys
 from collections import Counter
-from ..trie.trie import make_trie
 
-def find_anagrams(letters):
-    trie = make_trie()
+def find_anagrams(letters, trie):
     letter_counts = Counter(letters)
     return anagram_engine(letter_counts, [], trie, len(letters))
 
