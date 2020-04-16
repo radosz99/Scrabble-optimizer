@@ -59,7 +59,7 @@ class ScrabbleUi(QMainWindow):
             label.setStyleSheet("font-weight: bold; color: rgb(10, 10, 10); font-size: 18;background-color : " + self.coloring_field(id))
             #label.setStyleSheet("font-weight: bold; color: rgb(230, 230, 230); font-size: 18;background-color : " + self.coloring_field(id))
             label.setUpdatesEnabled(True)
-            label.setFont(QtGui.QFont("Cambria", 22, QtGui.QFont.Black))
+            label.setFont(QtGui.QFont("Cambria", 22 , QtGui.QFont.Black))
             self.fields[id] = label
             self.fields[id].setFixedSize(40, 40)
             self.fieldsLayout.addWidget(self.fields[id], pos[0], pos[1])

@@ -8,9 +8,10 @@ class Algorithm:
 
     def algorithm_engine(self):
         anagrams = find_anagrams(self.letters,make_trie())
+        best = max(anagrams, key=len)
 
-        for y in range (len(anagrams[len(anagrams)-1])):
-            self.board[3][y]=anagrams[len(anagrams)-1][y]
+        for y in range (len(best)):
+            self.board[3][y]=best[y]
             
         new_board=[]
         for line in self.board:
