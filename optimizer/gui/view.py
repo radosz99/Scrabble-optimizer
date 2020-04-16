@@ -17,7 +17,7 @@ class ScrabbleUi(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Scrabble Optimizer")
-        self.setFixedSize(670, 750)
+        self.setFixedSize(670, 800)
         self.generalLayout = QVBoxLayout()
         self._centralWidget = QWidget(self)
         self.setCentralWidget(self._centralWidget)
@@ -30,21 +30,32 @@ class ScrabbleUi(QMainWindow):
 
     def create_display(self):
         self.display = QLineEdit()
+        self.display.setAlignment(Qt.AlignCenter)
         self.display.setFixedHeight(35)
+        self.display.setFixedWidth(200)
         self.display.setAlignment(Qt.AlignRight)
         self.generalLayout.addWidget(self.display)
 
     def create_button(self):
         self.btn = QPushButton('Calculate!')
         self.btn.setFixedHeight(35)
+        self.btn.setFixedWidth(200)
         self.generalLayout.addWidget(self.btn)
+        self.btn_reset = QPushButton('Reset')
+        self.btn_reset.setFixedHeight(35)
+        self.btn_reset.setFixedWidth(200)
+        self.generalLayout.addWidget(self.btn_reset)
+        self.result_lbl = QLabel('')
+        self.result_lbl.setFixedHeight(30)
+        self.result_lbl.setFixedWidth(200)
+        self.generalLayout.addWidget(self.result_lbl)
 
     def create_fields(self):
         self.fields = {}
         f = open("optimizer/resources/board.csv", "r")
-        board = [line.strip().lower() for line in f]
+        self.board_from_file = [line.strip().lower() for line in f]
 
-        self.set_board(board)
+        self.set_board(self.board_from_file)
 
     def set_fields(self):
         for x in range(len(self._board)):
@@ -57,7 +68,6 @@ class ScrabbleUi(QMainWindow):
             label.setFrameStyle(QFrame.Panel | QFrame.Raised)
             label.setAlignment(Qt.AlignCenter)
             label.setStyleSheet("font-weight: bold; color: rgb(10, 10, 10); font-size: 18;background-color : " + self.coloring_field(id))
-            #label.setStyleSheet("font-weight: bold; color: rgb(230, 230, 230); font-size: 18;background-color : " + self.coloring_field(id))
             label.setUpdatesEnabled(True)
             label.setFont(QtGui.QFont("Cambria", 22 , QtGui.QFont.Black))
             self.fields[id] = label
@@ -82,7 +92,6 @@ class ScrabbleUi(QMainWindow):
         if((x==y) or (int(x+y)==14)):
             colour ='rgb(255, 153, 255)'
         else:
-            #colour = 'black'
             colour = 'rgb(230, 230, 230)'
         if(((x==0 or x==14) and (y==0 or y==7 or y==14)) or (x==7 and (y==0 or y==14))):
             colour ='red'
