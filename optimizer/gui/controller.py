@@ -48,7 +48,9 @@ class ScrabbleCntrl:
                     self.clear_layout()
     
     def randomString(self):
-        letters = string.ascii_uppercase 
+        letters = ['a','a','a','a','a','a','a','a','a','e','e','e','e','e','e','e','i','i','i','i','i','i','i','i','n','n','n','n','n','o','o','o','o','o','o',
+        'r','r','r','r','s','s','s','s','w','w','w','w','z','z','z','z','z','c','c','c','d','d','d','k','k','k','l','l','l','m','m','m','p','p','p','t','t','t','y','y','y','y',
+        'b','b','g','g','h','h','j','j','ł','ł','u','u','ą','ę','f','ó','u','ś','ż','ć','ń','ź']
         return ''.join(random.choice(letters) for i in range(7))
 
 class AlgWorker(QThread):

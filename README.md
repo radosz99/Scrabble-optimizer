@@ -27,7 +27,7 @@ $ git push --mirror
 
  <a name="sc"></a>
 ## Screenshot
-<img src="https://i.imgur.com/7QBSK59.png" width=50% />
+![Alt Text](https://media.giphy.com/media/W4bsvmfWhAkj6ph7iE/giphy.gif)
 
  <a name="tech"></a>
 # Technologies
