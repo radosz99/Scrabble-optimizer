@@ -36,7 +36,6 @@ class Algorithm:
         valid_anagrams = self.find_probably_valid_words(anagrams=anagrams, letters=str(self.letters), board_letters=board_letters, brigdes=brigdes)
         #znajdowanie wyrazow rzeczywiscie pasujacych do patternow, ostateczna selekcja
         list_of_valid_words = self.find_certainly_valid_words(valid_anagrams)
-        print(list_of_valid_words)
         #sortowanie listy od najlepszych ruchow (najwiecej punktowanych)
         sorted_list_of_valid_words = sorted(list_of_valid_words, key=lambda tup: tup[1])
 
@@ -61,9 +60,9 @@ class Algorithm:
         for pattern in self.pattern_board:
             if(str(pattern[0])==_word):
                 if(len(_word)==2):
-                    if(pattern[3]==positions[0]):
+                    if(pattern[3]>=positions[0] and len(word)<=9):
                         if(pattern[4]>=(len(word)-positions[1]-1)):
-                            list_of_possible_patterns.append((word, pattern))
+                            list_of_possible_patterns.append((word, (pattern[0],pattern[1],pattern[2],positions[0], pattern[4], pattern[5], pattern[6])))
                 if(len(_word)==1):
                     if(pattern[3]==positions[0]):
                         if(pattern[4]>=(len(word)-positions[0]-1)):
@@ -73,16 +72,6 @@ class Algorithm:
             return list_of_possible_patterns
         else:
             return ''
-
-    def update_board(self,coords, best):
-        if(coords[5]=='v'):
-            for x in range (len(best)):
-                if(x!=coords[3]):
-                    self.board[coords[1]+x-coords[3]][coords[2]]=best[x]
-        if(coords[5]=='h'):
-            for x in range (len(best)):
-                if(x!=coords[3]):
-                    self.board[coords[1]][coords[2]+x-coords[3]]=best[x]
 
     def find_certainly_valid_words(self, sorted_by_length):
         word=''
@@ -154,13 +143,22 @@ class Algorithm:
         #string z pozostalymi slowami
         str_other_best_valid=''
         for i in range (6):
-            if(len(sorted_list_of_valid_words)>i):
+            if(len(sorted_list_of_valid_words)>i+1):
                 info_other = sorted_list_of_valid_words[len(sorted_list_of_valid_words)-2-i]
                 str_other_best_valid=str_other_best_valid+info_other[0][0]+' - '+str(info_other[1]) + " pts., "
         str_other_best_valid = str_other_best_valid[0:len(str_other_best_valid)-2]
         return str_other_best_valid+' Total: ' + str(len(sorted_list_of_valid_words))+ ' words.'
 
-        #TODO:patterns shouldn't be hardcoded, solve it
+    def update_board(self,coords, best):
+        if(coords[5]=='v'):
+            for x in range (len(best)):
+                if(x!=coords[3]):
+                    self.board[coords[1]+x-coords[3]][coords[2]]=best[x]
+        if(coords[5]=='h'):
+            for x in range (len(best)):
+                if(x!=coords[3]):
+                    self.board[coords[1]][coords[2]+x-coords[3]]=best[x]
+
     def create_patterns(self):
         self.pattern_board=[]
     
@@ -176,8 +174,9 @@ class Algorithm:
             self.pattern_board.append(pattern)
         for pattern in pattern_h_bridges:
             self.pattern_board.append(pattern)
-        print(self.pattern_board)
-        print(' ')
+        
+        # for pattern in self.pattern_board:
+        #     print(pattern)
 
     def evaluate_move(self, word_with_pattern):
         coords = word_with_pattern[1]
@@ -275,8 +274,7 @@ class Algorithm:
                         check=True
                     elif(board[x][y+1]==''):
                         check=True
-
-                    if(board[x][y-1]=='' and check):
+                    if((board[x][y-1]=='' or y==0)and check):
                         #lewo
                         if(x!=14 and x!=0):
                             if(board[x-1][y-1]=='' and board[x+1][y-1]==''):
@@ -291,15 +289,9 @@ class Algorithm:
                             if(board[x+1][y-1]==''):
                                 if(board[x][y-2]=='' or y-1==0):
                                     left=True
-                        
                         #prawo, tu rowniez obslugi, zrobic to z mala iloscia if'ow
-                        if(x!=14 and x!=0):
-                            check2=False
-                            if(y==14):
-                                continue
-                            elif(board[x+1][y+1]==''):
-                                check2=True
-                            if(board[x-1][y+1]=='' and check2):
+                        if(x!=14 and x!=0 and y!=14):
+                            if(board[x-1][y+1]=='' and board[x+1][y+1]==''):
                                 if(y+1==14):
                                     right=True
                                 elif(board[x][y+2]==''):
@@ -311,18 +303,12 @@ class Algorithm:
                                         right=True
                                     elif(board[x][y+2]==''):
                                         right=True
-                        elif(x==0):
-                            check2=False
-                            if(y==14):
-                                continue
-                            elif(board[x+1][y+1]==''):
-                                check2=True
-                            if(check2):
+                        elif(x==0 and y!=14):
+                            if(board[x+1][y+1]==''):
                                 if(y+1==14):
                                     right=True
                                 elif(board[x][y+2]==''):
                                     right=True
-                        
                         if(left==True):
                             index_left=1
                         if(right==True):
@@ -331,6 +317,7 @@ class Algorithm:
                         if(index_left!=1 and index_right!=1):
                             continue
 
+                        
                         if(index_left==1):
                             while(left==True and y-index_left!=0):
                                 state=False
@@ -339,7 +326,13 @@ class Algorithm:
                                 else:
                                     if(board[x+1][y-1-index_left]==''):
                                         state = True
-                                if(board[x-1][y-1-index_left]=='' and state):
+                                
+                                state2=False
+                                if(x==0):
+                                    state2=True
+                                elif(board[x-1][y-1-index_left]==''):
+                                    state2=True
+                                if(state2 and state):
                                     if(y-1-index_left==0):
                                         index_left=index_left+1
                                     elif(board[x][y-2-index_left]==''):
@@ -359,7 +352,12 @@ class Algorithm:
                                 else:
                                     if(board[x+1][y+1+index_right]==''):
                                         state = True
-                                if(board[x-1][y+1+index_right]=='' and state):
+                                state2=False
+                                if(x==0):
+                                    state2=True
+                                elif(board[x-1][y+1+index_right]==''):
+                                    state2=True
+                                if(state2 and state):
                                     if(y+1+index_right==14):
                                         index_right=index_right+1
                                     elif(board[x][y+2+index_right]==''):
@@ -403,23 +401,26 @@ class Algorithm:
         bridge_patterns=[]
         for pattern in pattern_board:
             char = pattern[0]
-            row=pattern[1]
-            col=pattern[2]
+
             for sub_pattern in pattern_board:
-                if(sub_pattern[1]>row+1 and sub_pattern[2]==col and sub_pattern[5]=='v' and ((sub_pattern[3]+pattern[4]>=sub_pattern[1]-pattern[1]-1)or(sub_pattern[1]==row+2))):
+                row=pattern[1]
+                col=pattern[2]
+                sub_row=sub_pattern[1]
+                sub_col=sub_pattern[2]
+                if(sub_row>row+1 and sub_col==col and sub_pattern[5]=='v' and ((sub_pattern[3]+pattern[4]>=sub_row-row-1)or(sub_row==row+2))):
                     cont=True
-                    if(sub_pattern[1]==row+2):
+                    if(sub_row==row+2):
                         if(self.board[row+1][col-1]!=''):
                             cont=False
                         elif(col+1<15):
                             if(self.board[row+1][col+1]!=''):
                                 cont=False   
-                    for i in range(sub_pattern[1]-row-1):
+                    for i in range(sub_row-row-1):
                         if(self.board[row+1+i][col]!=''):
                             cont=False
                     if(cont==False):
                         continue
-                    difference = sub_pattern[1]-row
+                    difference = sub_row-row
                     if(pattern[3]<=7-(difference-1)):
                         left_shift=pattern[3]
                         right_shift=7-(difference-1)-left_shift
@@ -427,20 +428,21 @@ class Algorithm:
                             right_shift=sub_pattern[4]   
                         bridge_pattern=(char+sub_pattern[0],row,col,left_shift,right_shift,'v',difference)
                         bridge_patterns.append(bridge_pattern)
-                if(sub_pattern[2]>col+1 and sub_pattern[1]==row and sub_pattern[5]=='h' and ((sub_pattern[3]+pattern[4]>=sub_pattern[2]-pattern[2]-1) or(sub_pattern[2]==col+2))):
+
+                if(sub_col>col+1 and sub_row==row and sub_pattern[5]=='h' and ((sub_pattern[3]+pattern[4]>=sub_col-col-1) or(sub_col==col+2))):
                     cont=True
-                    if(sub_pattern[2]==col+2):
+                    if(sub_col==col+2):
                         if(self.board[row-1][col+1]!=''):
                             cont=False
                         elif(row+1<15):
                             if(self.board[row+1][col+1]!=''):
                                 cont=False                           
-                    for i in range(sub_pattern[2]-col-1):
+                    for i in range(sub_col-col-1):
                         if(self.board[row][col+1+i]!=''):
                             cont=False
                     if(cont==False):
                         continue
-                    difference = sub_pattern[2]-col
+                    difference = sub_col-col
                     if(pattern[3]<=7-(difference-1)):
                         left_shift=pattern[3]
                         right_shift=7-(difference-1)-left_shift
@@ -448,6 +450,7 @@ class Algorithm:
                             right_shift=sub_pattern[4]   
                         bridge_pattern=(char+sub_pattern[0],row,col,left_shift,right_shift,'h',difference)
                         bridge_patterns.append(bridge_pattern)
+
         return list(set(bridge_patterns))
 
 

@@ -58,7 +58,7 @@ class ScrabbleUi(QMainWindow):
         self.generalLayout.addWidget(self.other_result_lbl)
 
     def load_board_from_file(self):
-        f = open("optimizer/resources/board3.csv", "r")
+        f = open("optimizer/resources/board.csv", "r")
         bb = [line.strip().lower() for line in f]
         self.board_from_file = []
         #konwersja csv na listy stringow
