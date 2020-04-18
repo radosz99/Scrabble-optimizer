@@ -314,7 +314,7 @@ class Algorithm:
                         elif(x==0):
                             check2=False
                             if(y==14):
-                                check2=True
+                                continue
                             elif(board[x+1][y+1]==''):
                                 check2=True
                             if(check2):

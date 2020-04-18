@@ -2,14 +2,19 @@ from pprint import pprint
 from PyQt5.QtCore import QThread, pyqtSignal
 import random
 import string
+import time
 
 class ScrabbleCntrl:
     def __init__(self, model, view):
         self._calculate = model
         self._view = view
+        self.scrabble_letters = ['a','a','a','a','a','a','a','a','a','e','e','e','e','e','e','e','i','i','i','i','i','i','i','i','n','n','n','n','n','o','o','o','o','o','o',
+        'r','r','r','r','s','s','s','s','w','w','w','w','z','z','z','z','z','c','c','c','d','d','d','k','k','k','l','l','l','m','m','m','p','p','p','t','t','t','y','y','y','y',
+        'b','b','g','g','h','h','j','j','ł','ł','u','u','ą','ę','f','ó','u','ś','ż','ć','ń','ź']
         # Connect signals and slots
         self.connect_signals()
-        
+        self._view.display.setText(self.randomString())
+
     def connect_signals(self):
         self._view.btn.clicked.connect(lambda: self.handle_click())
         self._view.btn_reset.clicked.connect(lambda: self.handle_reset_click())
@@ -49,10 +54,14 @@ class ScrabbleCntrl:
                     self.clear_layout()
     
     def randomString(self):
-        letters = ['a','a','a','a','a','a','a','a','a','e','e','e','e','e','e','e','i','i','i','i','i','i','i','i','n','n','n','n','n','o','o','o','o','o','o',
-        'r','r','r','r','s','s','s','s','w','w','w','w','z','z','z','z','z','c','c','c','d','d','d','k','k','k','l','l','l','m','m','m','p','p','p','t','t','t','y','y','y','y',
-        'b','b','g','g','h','h','j','j','ł','ł','u','u','ą','ę','f','ó','u','ś','ż','ć','ń','ź']
-        return ''.join(random.choice(letters) for i in range(7))
+        string=''
+        while(len(string)!=7 and len(self.scrabble_letters)!=0):
+            index=random.randint(0,len(self.scrabble_letters)-1)
+            char = self.scrabble_letters[index]
+            string=string+char
+            #self.scrabble_letters.remove(char)
+
+        return string
 
 class AlgWorker(QThread):
     end_signal = pyqtSignal(list, str, str)

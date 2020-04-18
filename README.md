@@ -7,7 +7,7 @@ _________________________________
 # Table of Contents
 - [General info](#desc)
   *  [Algorithm](#alg)
-  *  [Screenshot](#sc)
+  *  [Demo](#sc)
 - [Technologies](#tech)
 - [Status](#stat)
 
@@ -26,13 +26,13 @@ $ git push --mirror
 ## Algorithm
 
  <a name="sc"></a>
-## Screenshot
-![Alt Text](https://media.giphy.com/media/W4bsvmfWhAkj6ph7iE/giphy.gif)
+## Demo
+![Alt Text](https://s6.gifyu.com/images/gif-minuta.gif)
 
  <a name="tech"></a>
 # Technologies
 - Python 3.7,
-- PyQt5
+- PyQt5.
 
  <a name="stat"></a>
 # Status
