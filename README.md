@@ -26,10 +26,11 @@ $ git push --mirror
 ```
  <a name="alg"></a>
 ## Algorithm
-The algorithm supports the two most popular of the five moves in the game of scrabble - right angle and bridge (2) and 5) from [there](http://scrabblemania.pl/oficjalne-zasady-gry-w-scrabble), section *Ruch nastêpnego gracza*). Thanks to the creation of special patterns in which you can fit properly selected words, it provides optimal, most-scored results. It uses a dictionary with Polish words (nearly 3 million words), 
+The algorithm supports the two most popular of the five moves in the game of scrabble - right angle and bridge (*2)* and *5)* from [there](http://scrabblemania.pl/oficjalne-zasady-gry-w-scrabble), section *Ruch nastepnego gracza*). Thanks to the creation of special patterns in which you can fit properly selected words, it provides optimal, most-scored results. It uses a dictionary with Polish words (nearly 3 million words), 
 but it is possible to upload another (with fewer words) for making algorithm faster.
  <a name="sc"></a>
 ## Demo
+[Full video on YouTube](https://www.youtube.com/watch?v=Mp1yMPCs-0Y&t=2s)
 ![Alt Text](https://s6.gifyu.com/images/gif-minuta.gif)
 
  <a name="tech"></a>
