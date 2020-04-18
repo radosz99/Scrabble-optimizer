@@ -1,7 +1,6 @@
+from collections import OrderedDict 
 from .anagram import find_anagrams
 from ..trie.trie import make_trie
-
-#TODO:evaluate move!!!
 
 class Algorithm:
     def __init__(self, letters, board):
@@ -10,62 +9,47 @@ class Algorithm:
         self.create_patterns()
 
     def algorithm_engine(self):
-        info_result = self.find_words()
-        points = info_result[1]
-        best = info_result[0][0]
-        coords = info_result[0][1]
+        sorted_list_of_valid_words=self.get_valid_words()
+        if(len(sorted_list_of_valid_words)!=0):
+            info_result = sorted_list_of_valid_words[len(sorted_list_of_valid_words)-1]
+            points = info_result[1]
+            best = info_result[0][0]
+            coords = info_result[0][1]
 
-        if(coords[5]=='v'):
-            for x in range (len(best)):
-                if(x!=coords[3]):
-                    self.board[coords[1]+x-coords[3]][coords[2]]=best[x]
-        if(coords[5]=='h'):
-            for x in range (len(best)):
-                if(x!=coords[3]):
-                    self.board[coords[1]][coords[2]+x-coords[3]]=best[x]
-        new_board=[]
-        for line in self.board:
-            new_line=''
-            for ch in line:
-                new_line=new_line+str(ch)+';'
-            new_board.append(new_line[0:len(new_line)-1])
-               
-        return new_board, points,best
+            self.update_board(coords,best)
+            str_other_best_valid = self.get_string_with_others_best(sorted_list_of_valid_words)
 
-    def find_words(self):
-        ##--To trzeba bedzie wyliczyc na podstawie planszy
-        ##---------------------------
-        board_letters = 'akolwyprt'
-        brigdes={'or':3,'lt':3}
-        #----------------------------
+            str_best = "Played '" + best + "' for " + str(points) + " points"
+        else:
+            str_best=''
+            str_other_best_valid=''
+
+        return self.board, str_best, str_other_best_valid
+
+    def get_valid_words(self):
+        info = self.get_letters_for_anagram()
+        board_letters = info[0]
+        brigdes=info[1]
+        #znajdowanie wszystkich anagramow
         anagrams = find_anagrams(str(self.letters)+board_letters,make_trie())
+        #wybor wszystkich anagramow mogacych pasowac do patternow, wstepna selekcja
         valid_anagrams = self.find_probably_valid_words(anagrams=anagrams, letters=str(self.letters), board_letters=board_letters, brigdes=brigdes)
-        sorted_by_length = sorted(valid_anagrams, key=len)
-        counter=1
-        word=''
-        list_of_valid_words=[]
-
-        while(counter!=len(sorted_by_length)-1):
-            word_to_check=sorted_by_length[len(sorted_by_length)-counter]
-            word = self.check_if_valid(word_to_check)     
-            if(word!=''):
-                result = self.evaluate_move(word)
-                list_of_valid_words.append((word,result))
-            counter=counter+1
-
+        #znajdowanie wyrazow rzeczywiscie pasujacych do patternow, ostateczna selekcja
+        list_of_valid_words = self.find_certainly_valid_words(valid_anagrams)
+        print(list_of_valid_words)
+        #sortowanie listy od najlepszych ruchow (najwiecej punktowanych)
         sorted_list_of_valid_words = sorted(list_of_valid_words, key=lambda tup: tup[1])
-        result = sorted_list_of_valid_words[len(sorted_list_of_valid_words)-1]
 
-        return result
+        return sorted_list_of_valid_words
 
     def check_if_valid(self,word):
+        list_of_possible_patterns=[]
         _word = word
         for char in self.letters:
             position = _word.find(char)
             if(position!=-1):
                 help_word = _word[0 : position ] + _word[position + 1 : len(_word)]
                 _word = help_word
-            
         positions=[]
         if(len(_word)!=0):
             for char in _word:
@@ -78,17 +62,46 @@ class Algorithm:
             if(str(pattern[0])==_word):
                 if(len(_word)==2):
                     if(pattern[3]==positions[0]):
-                        if(pattern[4]>(len(word)-positions[1]-1)):
-                            return word, pattern
+                        if(pattern[4]>=(len(word)-positions[1]-1)):
+                            list_of_possible_patterns.append((word, pattern))
                 if(len(_word)==1):
                     if(pattern[3]==positions[0]):
-                        if(pattern[4]>(len(word)-positions[0]-1)):
-                            return word, pattern
+                        if(pattern[4]>=(len(word)-positions[0]-1)):
+                            list_of_possible_patterns.append((word, pattern))
  
-        return ''
+        if(len(list_of_possible_patterns)!=0):
+            return list_of_possible_patterns
+        else:
+            return ''
+
+    def update_board(self,coords, best):
+        if(coords[5]=='v'):
+            for x in range (len(best)):
+                if(x!=coords[3]):
+                    self.board[coords[1]+x-coords[3]][coords[2]]=best[x]
+        if(coords[5]=='h'):
+            for x in range (len(best)):
+                if(x!=coords[3]):
+                    self.board[coords[1]][coords[2]+x-coords[3]]=best[x]
+
+    def find_certainly_valid_words(self, sorted_by_length):
+        word=''
+        list_of_valid_words=[]
+        counter=1
+        #ewaluacja ruchow i zapis do listy
+        while(counter!=len(sorted_by_length)+1):     
+            word_to_check=sorted_by_length[len(sorted_by_length)-counter]
+            words = self.check_if_valid(word_to_check) 
+            for word in words:
+                if(word!=''):
+                    result = self.evaluate_move(word)
+                    list_of_valid_words.append((word,result))
+            counter=counter+1
+
+        return list_of_valid_words
 
     def find_probably_valid_words(self, anagrams, letters, board_letters, brigdes):
-        max_letters_from_board_to_connect = 2 ##maksymalny most, czyli przewiduje max 2
+        max_letters_from_board_to_connect = 2 #maksymalny most, czyli przewiduje max 2
         new_anagrams = []
 
         for anagram in anagrams:
@@ -134,74 +147,37 @@ class Algorithm:
                 elif(len(new_anagram)<2):
                     new_anagrams.append(anagram)
 
-        return(new_anagrams)
+        sorted_by_length = sorted(new_anagrams, key=len)
+        return sorted_by_length
     
-    #TODO:patterns shouldn't be hardcoded, solve it
+    def get_string_with_others_best(self,sorted_list_of_valid_words):
+        #string z pozostalymi slowami
+        str_other_best_valid=''
+        for i in range (6):
+            if(len(sorted_list_of_valid_words)>i):
+                info_other = sorted_list_of_valid_words[len(sorted_list_of_valid_words)-2-i]
+                str_other_best_valid=str_other_best_valid+info_other[0][0]+' - '+str(info_other[1]) + " pts., "
+        str_other_best_valid = str_other_best_valid[0:len(str_other_best_valid)-2]
+        return str_other_best_valid+' Total: ' + str(len(sorted_list_of_valid_words))+ ' words.'
+
+        #TODO:patterns shouldn't be hardcoded, solve it
     def create_patterns(self):
         self.pattern_board=[]
-        self.pattern_board.append(('a', 5,5, 5,2, 'h'))
-        self.pattern_board.append(('a', 5,5, 4,3, 'h'))
-        self.pattern_board.append(('a', 5,5, 3,4, 'h'))
-        self.pattern_board.append(('a', 5,5, 2,5, 'h'))
-        self.pattern_board.append(('a', 5,5, 1,6, 'h'))
-        self.pattern_board.append(('a', 5,5, 0,7, 'h'))
-        self.pattern_board.append(('k', 7,1, 6,1, 'v'))
-        self.pattern_board.append(('k', 7,1, 5,1, 'v'))
-        self.pattern_board.append(('k', 7,1, 4,1, 'v'))
-        self.pattern_board.append(('k', 7,1, 3,1, 'v'))
-        self.pattern_board.append(('k', 7,1, 2,1, 'v'))
-        self.pattern_board.append(('k', 7,1, 1,1, 'v'))
-        self.pattern_board.append(('k', 7,1, 0,1, 'v'))
-        self.pattern_board.append(('o', 7,2, 6,1, 'v'))
-        self.pattern_board.append(('o', 7,2, 5,1, 'v'))
-        self.pattern_board.append(('o', 7,2, 4,1, 'v'))
-        self.pattern_board.append(('o', 7,2, 3,1, 'v'))
-        self.pattern_board.append(('o', 7,2, 2,1, 'v'))
-        self.pattern_board.append(('o', 7,2, 1,1, 'v'))
-        self.pattern_board.append(('o', 7,2, 0,1, 'v'))
-        self.pattern_board.append(('l', 7,3, 6,1, 'v'))
-        self.pattern_board.append(('l', 7,3, 5,1, 'v'))
-        self.pattern_board.append(('l', 7,3, 4,1, 'v'))
-        self.pattern_board.append(('l', 7,3, 3,1, 'v'))
-        self.pattern_board.append(('l', 7,3, 2,1, 'v'))
-        self.pattern_board.append(('l', 7,3, 1,1, 'v'))
-        self.pattern_board.append(('l', 7,3, 0,1, 'v'))
-        self.pattern_board.append(('w', 7,7, 6,1, 'v'))
-        self.pattern_board.append(('w', 7,7, 5,2, 'v'))
-        self.pattern_board.append(('w', 7,7, 4,3, 'v'))
-        self.pattern_board.append(('w', 7,7, 3,4, 'v'))
-        self.pattern_board.append(('w', 7,7, 2,5, 'v'))
-        self.pattern_board.append(('w', 7,7, 1,6, 'v'))
-        self.pattern_board.append(('w', 7,7, 0,7, 'v'))
-        self.pattern_board.append(('y', 7,8, 6,1, 'v'))
-        self.pattern_board.append(('y', 7,8, 5,2, 'v'))
-        self.pattern_board.append(('y', 7,8, 4,3, 'v'))
-        self.pattern_board.append(('y', 7,8, 3,4, 'v'))
-        self.pattern_board.append(('y', 7,8, 2,5, 'v'))
-        self.pattern_board.append(('y', 7,8, 1,6, 'v'))
-        self.pattern_board.append(('y', 7,8, 0,7, 'v'))
-        self.pattern_board.append(('p', 9,5, 0,7, 'h'))
-        self.pattern_board.append(('k', 10,0, 2,0, 'v'))
-        self.pattern_board.append(('k', 10,0, 1,0, 'v'))
-        self.pattern_board.append(('r', 10,2, 1,0, 'v'))
-        self.pattern_board.append(('t', 10,3, 1,4, 'v'))
-        self.pattern_board.append(('t', 10,3, 0,4, 'v'))
-        self.pattern_board.append(('k', 10,4, 0,4, 'v'))
-        self.pattern_board.append(('k', 12,1, 1,6, 'h'))
-        self.pattern_board.append(('k', 12,1, 0,7, 'h'))
-        self.pattern_board.append(('a', 13,1, 1,6, 'h'))
-        self.pattern_board.append(('a', 13,1, 0,7, 'h'))
-        self.pattern_board.append(('or', 7,2, 5,0, 'v',3))
-        self.pattern_board.append(('or', 7,2, 4,0, 'v',3))
-        self.pattern_board.append(('or', 7,2, 3,0, 'v',3))
-        self.pattern_board.append(('or', 7,2, 2,0, 'v',3))
-        self.pattern_board.append(('or', 7,2, 1,0, 'v',3))
-        self.pattern_board.append(('or', 7,2, 0,0, 'v',3))
-        self.pattern_board.append(('lt', 7,3, 0,4, 'v',3))
-        self.pattern_board.append(('lt', 7,3, 1,3, 'v',3))
-        self.pattern_board.append(('lt', 7,3, 2,2, 'v',3))
-        self.pattern_board.append(('lt', 7,3, 3,1, 'v',3))
-        self.pattern_board.append(('lt', 7,3, 4,0, 'v',3))
+    
+        pattern_h_board = self.make_patterns(self.board, 'h')
+        pattern_v_board = self.make_patterns(self.transpose_board(self.board),'v')
+        pattern_v_bridges = self.make_brigdes(pattern_v_board)
+        pattern_h_bridges = self.make_brigdes(pattern_h_board)
+        for pattern in pattern_h_board:
+            self.pattern_board.append(pattern)
+        for pattern in pattern_v_board:
+            self.pattern_board.append(pattern)
+        for pattern in pattern_v_bridges:
+            self.pattern_board.append(pattern)
+        for pattern in pattern_h_bridges:
+            self.pattern_board.append(pattern)
+        print(self.pattern_board)
+        print(' ')
 
     def evaluate_move(self, word_with_pattern):
         coords = word_with_pattern[1]
@@ -273,3 +249,227 @@ class Algorithm:
         if(char=='ź'):
             return 9
         return 1
+
+
+    def transpose_board(self,board):
+        transposed_board =[]
+
+        for x in range(15):
+            new_line=[]
+            for y in range(15):
+                new_line.append(board[y][14-x])
+            transposed_board.append(new_line)
+        return transposed_board    
+
+    def make_patterns(self,board, node_orient):
+        pattern_board=[]
+        for x in range(15):
+            for y in range(15):
+                if(board[x][y]!=''):
+                    left=False
+                    right=False
+                    index_left=0
+                    index_right=0
+                    check=False
+                    if(y+1>14):
+                        check=True
+                    elif(board[x][y+1]==''):
+                        check=True
+
+                    if(board[x][y-1]=='' and check):
+                        #lewo
+                        if(x!=14 and x!=0):
+                            if(board[x-1][y-1]=='' and board[x+1][y-1]==''):
+                                if(board[x][y-2]=='' or y-1==0):
+                                    left=True
+                        elif(x==14):
+                            if(y-1>=0):
+                                if(board[x-1][y-1]==''):
+                                    if(board[x][y-2]=='' or y-1==0):
+                                        left=True
+                        elif(x==0):
+                            if(board[x+1][y-1]==''):
+                                if(board[x][y-2]=='' or y-1==0):
+                                    left=True
+                        
+                        #prawo, tu rowniez obslugi, zrobic to z mala iloscia if'ow
+                        if(x!=14 and x!=0):
+                            check2=False
+                            if(y==14):
+                                continue
+                            elif(board[x+1][y+1]==''):
+                                check2=True
+                            if(board[x-1][y+1]=='' and check2):
+                                if(y+1==14):
+                                    right=True
+                                elif(board[x][y+2]==''):
+                                    right=True
+                        elif(x==14):
+                            if(y<14):
+                                if(board[x-1][y+1]==''):
+                                    if(y+1==14):
+                                        right=True
+                                    elif(board[x][y+2]==''):
+                                        right=True
+                        elif(x==0):
+                            check2=False
+                            if(y==14):
+                                check2=True
+                            elif(board[x+1][y+1]==''):
+                                check2=True
+                            if(check2):
+                                if(y+1==14):
+                                    right=True
+                                elif(board[x][y+2]==''):
+                                    right=True
+                        
+                        if(left==True):
+                            index_left=1
+                        if(right==True):
+                            index_right=1
+
+                        if(index_left!=1 and index_right!=1):
+                            continue
+
+                        if(index_left==1):
+                            while(left==True and y-index_left!=0):
+                                state=False
+                                if(x==14):
+                                    state = True
+                                else:
+                                    if(board[x+1][y-1-index_left]==''):
+                                        state = True
+                                if(board[x-1][y-1-index_left]=='' and state):
+                                    if(y-1-index_left==0):
+                                        index_left=index_left+1
+                                    elif(board[x][y-2-index_left]==''):
+                                        index_left=index_left+1
+                                    else:
+                                        left=False
+                                else:
+                                    left=False
+
+                        if(index_right==1):
+                            while(right==True and y+index_right!=14):
+                                state=False
+                                if(x==14):
+                                    state = True
+                                elif(y+index_right==14):
+                                    state=True
+                                else:
+                                    if(board[x+1][y+1+index_right]==''):
+                                        state = True
+                                if(board[x-1][y+1+index_right]=='' and state):
+                                    if(y+1+index_right==14):
+                                        index_right=index_right+1
+                                    elif(board[x][y+2+index_right]==''):
+                                        index_right=index_right+1
+                                    else:
+                                        right=False
+                                else:
+                                    right=False
+
+                        help_index_right = index_right
+                        help_index_left = index_left
+                        if(index_right>7):
+                            help_index_right=7
+                        if(index_left>7):
+                            help_index_left=7
+                        
+                        for i in range (help_index_left+1):
+                            right_shift=help_index_right
+                            if(i==0 and help_index_right==0):
+                                continue
+                            if(node_orient=='h'):
+                                coord_x=x
+                                coord_y=y
+                            else:
+                                coord_x=y
+                                coord_y=14-x
+                            if(i+help_index_right>7):
+                                right_shift = right_shift-(i+help_index_right-7)
+                            if(right_shift<0):
+                                right_shift=0
+                            if(y==0):
+                                pattern = (board[x][y].lower(),coord_x,coord_y,0,right_shift,node_orient)
+                            else:
+                                pattern = (board[x][y].lower(),coord_x,coord_y,i,right_shift,node_orient)
+                            pattern_board.append(pattern)
+
+
+        return pattern_board
+
+    def make_brigdes(self,pattern_board):
+        bridge_patterns=[]
+        for pattern in pattern_board:
+            char = pattern[0]
+            row=pattern[1]
+            col=pattern[2]
+            for sub_pattern in pattern_board:
+                if(sub_pattern[1]>row+1 and sub_pattern[2]==col and sub_pattern[5]=='v' and ((sub_pattern[3]+pattern[4]>=sub_pattern[1]-pattern[1]-1)or(sub_pattern[1]==row+2))):
+                    cont=True
+                    if(sub_pattern[1]==row+2):
+                        if(self.board[row+1][col-1]!=''):
+                            cont=False
+                        elif(col+1<15):
+                            if(self.board[row+1][col+1]!=''):
+                                cont=False   
+                    for i in range(sub_pattern[1]-row-1):
+                        if(self.board[row+1+i][col]!=''):
+                            cont=False
+                    if(cont==False):
+                        continue
+                    difference = sub_pattern[1]-row
+                    if(pattern[3]<=7-(difference-1)):
+                        left_shift=pattern[3]
+                        right_shift=7-(difference-1)-left_shift
+                        if(right_shift>sub_pattern[4]):
+                            right_shift=sub_pattern[4]   
+                        bridge_pattern=(char+sub_pattern[0],row,col,left_shift,right_shift,'v',difference)
+                        bridge_patterns.append(bridge_pattern)
+                if(sub_pattern[2]>col+1 and sub_pattern[1]==row and sub_pattern[5]=='h' and ((sub_pattern[3]+pattern[4]>=sub_pattern[2]-pattern[2]-1) or(sub_pattern[2]==col+2))):
+                    cont=True
+                    if(sub_pattern[2]==col+2):
+                        if(self.board[row-1][col+1]!=''):
+                            cont=False
+                        elif(row+1<15):
+                            if(self.board[row+1][col+1]!=''):
+                                cont=False                           
+                    for i in range(sub_pattern[2]-col-1):
+                        if(self.board[row][col+1+i]!=''):
+                            cont=False
+                    if(cont==False):
+                        continue
+                    difference = sub_pattern[2]-col
+                    if(pattern[3]<=7-(difference-1)):
+                        left_shift=pattern[3]
+                        right_shift=7-(difference-1)-left_shift
+                        if(right_shift>sub_pattern[4]):
+                            right_shift=sub_pattern[4]   
+                        bridge_pattern=(char+sub_pattern[0],row,col,left_shift,right_shift,'h',difference)
+                        bridge_patterns.append(bridge_pattern)
+        return list(set(bridge_patterns))
+
+
+    def get_letters_for_anagram(self):
+        board_letters=''
+        bridges={}
+        for pattern in self.pattern_board:
+            if(len(pattern[0])==2):
+                bridges[pattern[0]]=pattern[6]
+            elif(len(pattern[0])==1):
+                board_letters=board_letters+pattern[0]
+
+        letters = "".join(set(board_letters)) 
+        for key in bridges:
+            position1 = letters.find(key[0])
+            position2 = letters.find(key[1])
+            if(position1==-1 and position2==-1):
+                letters.join(key[0])
+                letters.join(key[1])
+            elif(position1==-1):
+                letters.join(key[0])
+            elif(position2==-1):
+                letters.join(key[1])
+        return letters, bridges
+        

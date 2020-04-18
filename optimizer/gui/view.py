@@ -17,7 +17,7 @@ class ScrabbleUi(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Scrabble Optimizer")
-        self.setFixedSize(670, 800)
+        self.setFixedSize(700, 900)
         self.generalLayout = QVBoxLayout()
         self._centralWidget = QWidget(self)
         self.setCentralWidget(self._centralWidget)
@@ -25,7 +25,8 @@ class ScrabbleUi(QMainWindow):
         self.fieldsLayout = QGridLayout()
         self.init_color_fields()
         self.create_display()
-        self.create_button()
+        self.create_buttons()
+        self.create_labels()
         self.create_fields()
 
     def create_display(self):
@@ -36,7 +37,7 @@ class ScrabbleUi(QMainWindow):
         self.display.setAlignment(Qt.AlignRight)
         self.generalLayout.addWidget(self.display)
 
-    def create_button(self):
+    def create_buttons(self):
         self.btn = QPushButton('Calculate!')
         self.btn.setFixedHeight(35)
         self.btn.setFixedWidth(200)
@@ -45,16 +46,30 @@ class ScrabbleUi(QMainWindow):
         self.btn_reset.setFixedHeight(35)
         self.btn_reset.setFixedWidth(200)
         self.generalLayout.addWidget(self.btn_reset)
+
+    def create_labels(self):
         self.result_lbl = QLabel('')
         self.result_lbl.setFixedHeight(30)
-        self.result_lbl.setFixedWidth(200)
+        self.result_lbl.setFixedWidth(300)
         self.generalLayout.addWidget(self.result_lbl)
+        self.other_result_lbl = QLabel('')
+        self.other_result_lbl.setFixedHeight(30)
+        self.other_result_lbl.setFixedWidth(670)
+        self.generalLayout.addWidget(self.other_result_lbl)
+
+    def load_board_from_file(self):
+        f = open("optimizer/resources/board3.csv", "r")
+        bb = [line.strip().lower() for line in f]
+        self.board_from_file = []
+        #konwersja csv na listy stringow
+        for x in range(len(bb)):
+            line = bb[x].split(";")
+            upper_line = [y.upper() for y in line] 
+            self.board_from_file.append(upper_line)
 
     def create_fields(self):
-        self.fields = {}
-        f = open("optimizer/resources/board.csv", "r")
-        self.board_from_file = [line.strip().lower() for line in f]
-
+        self.fields = {} 
+        self.load_board_from_file()
         self.set_board(self.board_from_file)
 
     def set_fields(self):
@@ -88,7 +103,7 @@ class ScrabbleUi(QMainWindow):
         _key = key.split(";")
         x = int(_key[0])
         y = int(_key[1])
-        colour=''
+        colour='black'
         if((x==y) or (int(x+y)==14)):
             colour ='rgb(255, 153, 255)'
         else:
@@ -115,8 +130,7 @@ class ScrabbleUi(QMainWindow):
         self._board=[]
         self._board.clear()
         for x in range(len(board)):
-            line = board[x].split(";")
-            upper_line = [x.upper() for x in line] 
+            upper_line = [y.upper() for y in board[x]] 
             self._board.append(upper_line)
         self.set_fields()
         

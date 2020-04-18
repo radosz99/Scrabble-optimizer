@@ -22,16 +22,17 @@ class ScrabbleCntrl:
         self.worker.end_signal.connect(self.end_signal_handle)        
         self.worker.start()                     
 
-    def end_signal_handle(self, board, result, word):
+    def end_signal_handle(self, board, str_best, str_others):
         self._view.btn.setText("Calculate for new letters")
-        if(len(word)!=0):
-            self._view.result_lbl.setText("Played '" + word + "' for " + result + " points")
+        if(len(str_best)!=0):
+            self._view.result_lbl.setText(str_best)
         else:
             self._view.result_lbl.setText("No words available!")
         self.clear_layout()
         self._view.set_board(board)
         self._view.btn.setEnabled(True)
         self._view.display.setText(self.randomString())
+        self._view.other_result_lbl.setText("Other possible: " + str_others)
     
     def handle_reset_click(self):
         self._view.set_board(self._view.board_from_file)
@@ -65,6 +66,6 @@ class AlgWorker(QThread):
     def run(self):
         info = self.alg(self.letters, self.board)
         board=info[0]
-        result=str(info[1])
-        best=info[2]
-        self.end_signal.emit(board, result, best)
+        best=info[1]
+        others=info[2]
+        self.end_signal.emit(board, best, others)
