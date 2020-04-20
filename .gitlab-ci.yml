@@ -1,6 +1,0 @@
-stages:
-  - test
-
-test:
-  script:
-    - echo "Building Python project"
