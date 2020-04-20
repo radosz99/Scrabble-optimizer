@@ -1,6 +1,5 @@
 from collections import OrderedDict 
 from .anagram import find_anagrams
-from ..trie.trie import make_trie
 
 class Algorithm:
     def __init__(self, letters, board):
@@ -8,8 +7,8 @@ class Algorithm:
         self.board = board
         self.create_patterns()
 
-    def algorithm_engine(self,lang):
-        sorted_list_of_valid_words=self.get_valid_words(lang)
+    def algorithm_engine(self,trie):
+        sorted_list_of_valid_words=self.get_valid_words(trie)
         
         if(len(sorted_list_of_valid_words)!=0):
             info_result = sorted_list_of_valid_words[len(sorted_list_of_valid_words)-1]
@@ -22,13 +21,14 @@ class Algorithm:
             self.update_board(coords,best)
             str_other_best_valid = self.get_string_with_others_best(sorted_list_of_valid_words)
 
-            str_best = "Played '" + best + "' for " + str(points) + " points"
+        
         else:
-            str_best=''
+            best=''
+            points=0
             str_other_best_valid=''
             letters_not_used=[]
 
-        return self.board, str_best, str_other_best_valid,letters_not_used
+        return self.board, (best,points), str_other_best_valid,letters_not_used
 
     def letters_not_used(self,word, pattern_letters):
         for char in pattern_letters:
@@ -42,12 +42,12 @@ class Algorithm:
         letters_not_used=self.letters
         return letters_not_used
 
-    def get_valid_words(self, lang):
+    def get_valid_words(self, trie):
         info = self.get_letters_for_anagram()
         board_letters = info[0]
         brigdes=info[1]
         #znajdowanie wszystkich anagramow
-        anagrams = find_anagrams(str(self.letters)+board_letters,make_trie(lang))
+        anagrams = find_anagrams(str(self.letters)+board_letters,trie)
         #wybor wszystkich anagramow mogacych pasowac do patternow, wstepna selekcja
         valid_anagrams = self.find_probably_valid_words(anagrams=anagrams, letters=str(self.letters), board_letters=board_letters, brigdes=brigdes)
         #znajdowanie wyrazow rzeczywiscie pasujacych do patternow, ostateczna selekcja

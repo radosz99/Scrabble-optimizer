@@ -17,7 +17,7 @@ class ScrabbleUi(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Scrabble Optimizer")
-        self.setFixedSize(700, 930)
+        self.setFixedSize(700, 960)
         self.generalLayout = QVBoxLayout()
         self._centralWidget = QWidget(self)
         self.setCentralWidget(self._centralWidget)
@@ -46,6 +46,10 @@ class ScrabbleUi(QMainWindow):
         self.btn_reset.setFixedHeight(35)
         self.btn_reset.setFixedWidth(200)
         self.generalLayout.addWidget(self.btn_reset)
+        self.btn_dict = QPushButton('Load dictionary first')
+        self.btn_dict.setFixedHeight(35)
+        self.btn_dict.setFixedWidth(200)
+        self.generalLayout.addWidget(self.btn_dict)
 
     def create_labels(self):
         self.result_lbl = QLabel('')

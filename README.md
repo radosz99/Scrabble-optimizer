@@ -7,8 +7,10 @@ _________________________________
 
 # Table of Contents
 - [General info](#desc)
+- [Run](#run)
 - [Technologies](#tech)
-- [Demo](#sc)
+- [Demo ENG](#sc)
+- [Demo PL](#scpl)
 - [Algorithm](#alg)
   *  [Patterns](#pat)
      *  [Right angle](#ang)
@@ -24,14 +26,19 @@ _________________________________
 # General info
 Python desktop application with algorithm for calculating best move based on the current board setting and user letters.
 
-Due to the lack of own server, the project was created locally as the Gerrit repository and two mirrors were created - one on GitLab (to use and practice GitLab Runner) and one on GitHab (to do the same with Jenkins). GitLab Runner runs after every change, and Jenkins runs periodically.
+Due to the lack of own server, the project was created locally as the Gerrit repository and two mirrors were created - one on GitLab (to use and practice GitLab Runner) and one on GitHub (to do the same with Jenkins). GitLab Runner runs after every change, and Jenkins runs periodically.
 
 After each commit, the repositories on Gitlab and Github are updated using the following commands:
 ```
 $ git fetch -p origin
 $ git push --mirror
 ```
-You can add your own dictionary to (*.../optimizer/resources*) folder by using convention of filename - **wordsID.txt**, when ID is country ID, e.g. ENG or PL. Then add specified list of letters with ID to* get_list_of_chars* method and in *ScrabbleCntrl* class simply change *lang* to ID. 
+You can add your own dictionary to (*.../optimizer/resources*) folder by using convention of filename - **wordsID.txt**, when ID is country ID, e.g. ENG or PL. Then add specified list of letters with ID to *get_list_of_chars* method and in *ScrabbleCntrl* class simply assign *lang* to ID. 
+
+<a name="run"></a>
+# Run
+Specify dictionary type (*self.lang* in *controller*), run *main.py*, load dictionary (it takes about (*number of words / 200 000* seconds) and calculate words.
+
 <a name="tech"></a>
 # Technologies
 - Python 3.7,
@@ -39,10 +46,17 @@ You can add your own dictionary to (*.../optimizer/resources*) folder by using c
 
 
  <a name="sc"></a>
-# Demo
-663 points in 52 seconds:  
+# Demo ENG
+679 points in 19 seconds:  
 
-![](https://s4.gifyu.com/images/Scrabble-Optimizer-2020-04-20-15-05-56.gif)
+![](https://s4.gifyu.com/images/Scrabble-Optimizer-2020-04-20-18-16-02.gif)
+
+ <a name="scpl"></a>
+# Demo PL
+750 points in 25 seconds:  
+
+![](https://s4.gifyu.com/images/Scrabble-Optimizer-2020-04-20-18-27-22.gif)
+
  <a name="alg"></a>
 # Algorithm
 The algorithm supports the two most popular of the five moves in the game of scrabble - right angle and bridge (*2)* and *5)* from [there](http://scrabblemania.pl/oficjalne-zasady-gry-w-scrabble), section *Ruch nastepnego gracza*). Thanks to the creation of special patterns in which you can fit properly selected words, it provides optimal, most-scored results.
@@ -137,7 +151,7 @@ Value of the best move was 32 points and according to the pattern assigned to th
 # Status
 The plans are to add additional, more complex, but less popular types of moves - adding letters to existing words, arranging several words at once. These could be done by creating new types of patterns and a little changes in algorithm engine. Feel free to pull request.  
 
-Also an improvement should be made to create bridges so that they can be created not only from letters that belong to *right angles*, but also other letters from the board - in this example *ê* is not *right angle* and bridge exist, but program will not find it:
+Also an improvement should be made to create bridges so that they can be created not only from letters that belong to *right angles*, but also other letters from the board - in this example bridge exist, but program will not find it because *ê* is not the *right angle*:
 <p align="center">
   <img src="https://i.imgur.com/gkaJ25M.png" width=32% alt="Img"/>
 </p>

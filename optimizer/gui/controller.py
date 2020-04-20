@@ -1,5 +1,6 @@
 from pprint import pprint
 from PyQt5.QtCore import QThread, pyqtSignal
+from ..trie.trie import make_trie
 import random
 import string
 import time
@@ -8,49 +9,72 @@ class ScrabbleCntrl:
     def __init__(self, model, view):
         self._calculate = model
         self._view = view
-        self.lang='ENG'
+        self.result=0
+        self.best=''
+        self.best_result=0
+        self.lang='PL'
+        self.trie={}
         self.scrabble_letters = self.get_list_of_chars(self.lang)
         # Connect signals and slots
-        self._view.letter_remaining_lbl.setText(str(len(self.scrabble_letters)) + " letters remaining.")
+        self._view.letter_remaining_lbl.setText(str(len(self.scrabble_letters)) + " letters remaining. Result = " + str(self.result) + " points.")
         self.connect_signals()
         self._view.display.setText(self.randomString())
 
     def connect_signals(self):
         self._view.btn.clicked.connect(lambda: self.handle_click())
         self._view.btn_reset.clicked.connect(lambda: self.handle_reset_click())
+        self._view.btn_dict.clicked.connect(lambda: self.load_trie())
 
     def add_letters(self, letters):
         for char in letters:
             self.scrabble_letters.append(char)
-        print(str(len(self.scrabble_letters)) + " letters remaining")
 
-#TODO handle whether too much letters are given
     def handle_click(self):
-        self._view.btn.setText("Calculating...")
         self._view.btn.setEnabled(False)
-        self.worker = AlgWorker(letters = self._view.get_letters(), board = self._view.get_board(), calculate=self._calculate, lang=self.lang)
-        self.worker.end_signal.connect(self.end_signal_handle)        
-        self.worker.start()                     
+        self._view.btn.setText("Calculating...")
+        self.workerAlg = AlgWorker(letters = self._view.get_letters(), board = self._view.get_board(), calculate=self._calculate, trie=self.trie)
+        self.workerAlg.end_signal.connect(self.end_signal_handle)        
+        self.workerAlg.start()                     
 
-    def end_signal_handle(self, board, str_best, str_others, str_letters):
+    def load_trie(self):
+        if(len(self.trie)==0):
+            self._view.btn_dict.setEnabled(False)
+            self._view.btn_dict.setText("Dictionary loading...")
+            self.workerTrie = TrieWorker(lang=self.lang)
+            self.workerTrie.end_signal.connect(self.end_trie_loading_handle) 
+            self.workerTrie.start()
+
+    def end_trie_loading_handle(self, trie):
+        self._view.btn_dict.setEnabled(True)
+        self._view.btn_dict.setText("Dictionary loaded!")
+        self.trie=trie
+
+    def end_signal_handle(self, board, best, str_others, str_letters, points):
         self._view.btn.setText("Calculate for new letters")
-        if(len(str_best)!=0):
-            self._view.result_lbl.setText(str_best)
+        self.result=self.result+points
+        if(points>self.best_result):
+            self.best_result=points
+            self.best=best
+        if(len(best)!=0):
+            self._view.result_lbl.setText("Played '" + best + "' for " + str(points) + " points.")
         else:
             self._view.result_lbl.setText("No words available!")
         self.clear_layout()
         self._view.set_board(board)
         self._view.btn.setEnabled(True)
         self.add_letters(str_letters)
-        self._view.letter_remaining_lbl.setText(str(len(self.scrabble_letters)) + " letters remaining.")
+        self._view.letter_remaining_lbl.setText(str(len(self.scrabble_letters)) + " letters remaining. Result = " + str(self.result) + " points. Best move is '" + self.best +"' for " + str(self.best_result) + " points.")
         self._view.display.setText(self.randomString())
         self._view.other_result_lbl.setText("Other possible: " + str_others)
     
     def handle_reset_click(self):
         self._view.set_board(self._view.board_from_file)
+        self.result=0
+        self.best=''
+        self.best_result=0
         self.scrabble_letters.clear()
         self.scrabble_letters=self.get_list_of_chars(self.lang)
-        self._view.letter_remaining_lbl.setText(str(len(self.scrabble_letters)) + " letters remaining.")
+        self._view.letter_remaining_lbl.setText(str(len(self.scrabble_letters)) + " letters remaining. Result = " + str(self.result) + " points.")
         self._view.display.setText(self.randomString())
         self._view.result_lbl.setText("")
         self._view.other_result_lbl.setText("")
@@ -88,19 +112,32 @@ class ScrabbleCntrl:
         'f','h','h','v','v','w','w','y','y','k','j','x','q','z']
 
 class AlgWorker(QThread):
-    end_signal = pyqtSignal(list, str, str, list)
+    end_signal = pyqtSignal(list, str, str, list, int)
 
-    def __init__(self, letters, board, calculate,lang):
+    def __init__(self, letters, board, calculate,trie):
         super().__init__() 
         self.board = board
         self.letters = letters
         self.alg = calculate
+        self.trie=trie
+
+    def run(self):
+        info = self.alg(self.letters, self.board, self.trie)
+        board=info[0]
+        best=info[1][0]
+        points=info[1][1]
+        others=info[2]
+        letters_used=info[3]
+        self.end_signal.emit(board, best, others,letters_used, points)
+
+
+class TrieWorker(QThread):
+    end_signal = pyqtSignal(dict)
+
+    def __init__(self, lang):
+        super().__init__() 
         self.lang=lang
 
     def run(self):
-        info = self.alg(self.letters, self.board, self.lang)
-        board=info[0]
-        best=info[1]
-        others=info[2]
-        letters_used=info[3]
-        self.end_signal.emit(board, best, others,letters_used)
+        trie = make_trie(self.lang)
+        self.end_signal.emit(trie)
