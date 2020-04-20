@@ -1,3 +1,4 @@
+ [![Build Status](https://dev.azure.com/241385/241385/_apis/build/status/radosz99.Scrabble-optimizer?branchName=master)](https://dev.azure.com/241385/241385/_build/latest?definitionId=1&branchName=master)
  <a name="stat"></a>
 **<p align="center"> Good Programming Practices </p>**
 _________________________________
