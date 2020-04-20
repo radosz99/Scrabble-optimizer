@@ -31,7 +31,7 @@ After each commit, the repositories on Gitlab and Github are updated using the f
 $ git fetch -p origin
 $ git push --mirror
 ```
-
+You can add your own dictionary to (*.../optimizer/resources*) folder by using convention of filename - **wordsID.txt**, when ID is country ID, e.g. ENG or PL. Then add specified list of letters with ID to* get_list_of_chars* method and in *ScrabbleCntrl* class simply change *lang* to ID. 
 <a name="tech"></a>
 # Technologies
 - Python 3.7,
@@ -40,12 +40,12 @@ $ git push --mirror
 
  <a name="sc"></a>
 # Demo
-[Full video on YouTube](https://www.youtube.com/watch?v=Mp1yMPCs-0Y&t=2s)
-![Alt Text](https://s6.gifyu.com/images/gif-minuta.gif)
+663 points in 52 seconds:  
+
+![](https://s4.gifyu.com/images/Scrabble-Optimizer-2020-04-20-15-05-56.gif)
  <a name="alg"></a>
 # Algorithm
-The algorithm supports the two most popular of the five moves in the game of scrabble - right angle and bridge (*2)* and *5)* from [there](http://scrabblemania.pl/oficjalne-zasady-gry-w-scrabble), section *Ruch nastepnego gracza*). Thanks to the creation of special patterns in which you can fit properly selected words, it provides optimal, most-scored results. It uses a dictionary with Polish words (nearly 3 million words), 
-but it is possible to upload another (with fewer words) for making algorithm faster.
+The algorithm supports the two most popular of the five moves in the game of scrabble - right angle and bridge (*2)* and *5)* from [there](http://scrabblemania.pl/oficjalne-zasady-gry-w-scrabble), section *Ruch nastepnego gracza*). Thanks to the creation of special patterns in which you can fit properly selected words, it provides optimal, most-scored results.
 
  <a name="pat"></a>
  ## Patterns (*create_patterns*)

@@ -8,13 +8,16 @@ class Algorithm:
         self.board = board
         self.create_patterns()
 
-    def algorithm_engine(self):
-        sorted_list_of_valid_words=self.get_valid_words()
+    def algorithm_engine(self,lang):
+        sorted_list_of_valid_words=self.get_valid_words(lang)
+        
         if(len(sorted_list_of_valid_words)!=0):
             info_result = sorted_list_of_valid_words[len(sorted_list_of_valid_words)-1]
             points = info_result[1]
             best = info_result[0][0]
             coords = info_result[0][1]
+
+            letters_not_used = self.letters_not_used(best, coords[0])
 
             self.update_board(coords,best)
             str_other_best_valid = self.get_string_with_others_best(sorted_list_of_valid_words)
@@ -23,15 +26,28 @@ class Algorithm:
         else:
             str_best=''
             str_other_best_valid=''
+            letters_not_used=[]
 
-        return self.board, str_best, str_other_best_valid
+        return self.board, str_best, str_other_best_valid,letters_not_used
 
-    def get_valid_words(self):
+    def letters_not_used(self,word, pattern_letters):
+        for char in pattern_letters:
+            position = word.find(char)
+            help_word = word[0 : position ] + word[position + 1 : len(word)]
+            word=help_word
+        
+        for char in word:
+            self.letters.remove(char)
+
+        letters_not_used=self.letters
+        return letters_not_used
+
+    def get_valid_words(self, lang):
         info = self.get_letters_for_anagram()
         board_letters = info[0]
         brigdes=info[1]
         #znajdowanie wszystkich anagramow
-        anagrams = find_anagrams(str(self.letters)+board_letters,make_trie())
+        anagrams = find_anagrams(str(self.letters)+board_letters,make_trie(lang))
         #wybor wszystkich anagramow mogacych pasowac do patternow, wstepna selekcja
         valid_anagrams = self.find_probably_valid_words(anagrams=anagrams, letters=str(self.letters), board_letters=board_letters, brigdes=brigdes)
         #znajdowanie wyrazow rzeczywiscie pasujacych do patternow, ostateczna selekcja
@@ -182,6 +198,9 @@ class Algorithm:
         coords = word_with_pattern[1]
         word = word_with_pattern[0]
         sum=0
+        bonus=0
+        if(len(word)-len(coords[0])==7):
+            bonus=50
         multiplier=1
         if(coords[5]=='v'):
             for x in range (len(word)):
@@ -208,7 +227,7 @@ class Algorithm:
                         info = self.get_field_value(word[x], coords[1],coords[2]+x-coords[3])
                         sum=sum+int(info[0])
                         multiplier=int(multiplier*int(info[1]))
-        return sum*multiplier
+        return sum*multiplier+bonus
                         
 
 
@@ -233,20 +252,36 @@ class Algorithm:
         return letter_multiplier*letter_value, word_multiplier
 
     def get_char_value(self,char):
-        if(char=='a' or char=='e' or char=='i' or char=='n' or char=='o' or char=='r' or char=='s' or char=='w' or char=='z'):
+        #PL
+        # if(char=='a' or char=='e' or char=='i' or char=='n' or char=='o' or char=='r' or char=='s' or char=='w' or char=='z'):
+        #     return 1
+        # if(char=='c' or char=='d' or char=='k' or char=='l' or char=='m' or char=='p' or char=='t' or char=='y'):
+        #     return 2
+        # if(char=='b' or char=='g' or char=='h' or char=='j' or char=='ł' or char=='u'):
+        #     return 3
+        # if(char=='ą' or char=='ę' or char=='f' or char=='ó' or char=='ś' or char=='ż'):
+        #     return 5
+        # if(char=='ć'):
+        #     return 6
+        # if(char=='ń'):
+        #     return 7
+        # if(char=='ź'):
+        #     return 9
+        #ENG
+        if(char=='a' or char=='e' or char=='i' or char=='n' or char=='o' or char=='r' or char=='s' or char=='t' or char=='u' or char=='l'):
             return 1
-        if(char=='c' or char=='d' or char=='k' or char=='l' or char=='m' or char=='p' or char=='t' or char=='y'):
+        if(char=='g' or char=='d'):
             return 2
-        if(char=='b' or char=='g' or char=='h' or char=='j' or char=='ł' or char=='u'):
+        if(char=='b' or char=='c' or char=='m' or char=='p'):
             return 3
-        if(char=='ą' or char=='ę' or char=='f' or char=='ó' or char=='ś' or char=='ż'):
+        if(char=='h' or char=='v' or char=='w' or char=='y' or char=='f'):
+            return 4
+        if(char=='k'):
             return 5
-        if(char=='ć'):
-            return 6
-        if(char=='ń'):
-            return 7
-        if(char=='ź'):
-            return 9
+        if(char=='j' or char=='x'):
+            return 8
+        if(char=='q' or char=='z'):
+            return 10
         return 1
 
 

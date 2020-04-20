@@ -1,9 +1,9 @@
-def read_words():
-    words = open("optimizer/resources/words.txt", "r")
+def read_words(lang):
+    words = open("optimizer/resources/words"+lang+".txt", "r")
     return [line.strip().lower() for line in words]
 
-def make_trie():
-    words = read_words()
+def make_trie(lang):
+    words = read_words(lang)
     root = {}
     for word in words:
         this_dict = root

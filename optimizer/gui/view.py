@@ -17,7 +17,7 @@ class ScrabbleUi(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Scrabble Optimizer")
-        self.setFixedSize(700, 900)
+        self.setFixedSize(700, 930)
         self.generalLayout = QVBoxLayout()
         self._centralWidget = QWidget(self)
         self.setCentralWidget(self._centralWidget)
@@ -56,6 +56,10 @@ class ScrabbleUi(QMainWindow):
         self.other_result_lbl.setFixedHeight(30)
         self.other_result_lbl.setFixedWidth(670)
         self.generalLayout.addWidget(self.other_result_lbl)
+        self.letter_remaining_lbl = QLabel('')
+        self.letter_remaining_lbl.setFixedHeight(30)
+        self.letter_remaining_lbl.setFixedWidth(670)
+        self.generalLayout.addWidget(self.letter_remaining_lbl)
 
     def load_board_from_file(self):
         f = open("optimizer/resources/board.csv", "r")
