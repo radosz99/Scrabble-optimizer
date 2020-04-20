@@ -27,13 +27,6 @@ _________________________________
 # General info
 Python desktop application with algorithm for calculating best move based on the current board setting and user letters.
 
-Due to the lack of own server, the project was created locally as the Gerrit repository and two mirrors were created - one on GitLab (to use and practice GitLab Runner) and one on GitHub (to do the same with Jenkins). GitLab Runner runs after every change, and Jenkins runs periodically.
-
-After each commit, the repositories on Gitlab and Github are updated using the following commands:
-```
-$ git fetch -p origin
-$ git push --mirror
-```
 You can add your own dictionary to (*.../optimizer/resources*) folder by using convention of filename - **wordsID.txt**, when ID is country ID, e.g. ENG or PL. Then add specified list of letters with ID to *get_list_of_chars* method and in *ScrabbleCntrl* class simply assign *lang* to ID. 
 
 <a name="run"></a>
