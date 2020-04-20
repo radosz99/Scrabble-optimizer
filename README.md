@@ -37,7 +37,7 @@ You can add your own dictionary to (*.../optimizer/resources*) folder by using c
 
 <a name="run"></a>
 # Run
-Specify dictionary type (*self.lang* in *controller*), run *main.py*, load dictionary (it takes about (*number of words / 200 000* seconds) and calculate words.
+Specify dictionary type (*self.lang* in *controller*), run *main.py*, load dictionary (it takes about (*number of words / 200 000*) seconds) and calculate words.
 
 <a name="tech"></a>
 # Technologies
