@@ -1,4 +1,3 @@
-import sys
 from collections import Counter
 
 def find_anagrams(letters, trie):

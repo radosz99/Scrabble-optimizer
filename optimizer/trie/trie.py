@@ -1,5 +1,3 @@
-import time
-
 def read_words(lang):
     words = open("optimizer/resources/words"+lang+".txt", "r")
     return [line.strip().lower() for line in words]
