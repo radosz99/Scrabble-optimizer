@@ -23,4 +23,5 @@ def get_words():
     else:
         folder = Path(__file__).parent
     file = folder/'optimizer/resources/wordsPL.txt'
+    print(file)
     return str(file)

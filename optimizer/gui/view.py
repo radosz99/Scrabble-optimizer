@@ -70,7 +70,7 @@ class ScrabbleUi(QMainWindow):
         # else:
         #     folder = Path(__file__).parent
         # file = folder/'optimizer/resources/board.csv'
-        # f = open(str(file), "r")
+        #f = open(str(file), "r")
         f = open('optimizer/resources/board.csv', "r")
         bb = [line.strip().lower() for line in f]
         self.board_from_file = []
