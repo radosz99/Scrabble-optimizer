@@ -25,7 +25,7 @@ steps:
   displayName: 'Install dependencies'
 - script: |
     python -m pip install setuptools wheel
-    python setup.py bdist_wheel --universal
+    python main.py bdist_wheel --universal
   displayName: "Build Python Wheel"
   continueOnError: false
 - publish: dist
