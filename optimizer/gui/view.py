@@ -1,5 +1,4 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QGridLayout
 from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QMainWindow
@@ -9,9 +8,8 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QFrame
 from PyQt5 import QtGui
+from pathlib import Path
 import sys
-import time
-
 
 class ScrabbleUi(QMainWindow):
     def __init__(self):
@@ -66,7 +64,12 @@ class ScrabbleUi(QMainWindow):
         self.generalLayout.addWidget(self.letter_remaining_lbl)
 
     def load_board_from_file(self):
-        f = open("optimizer/resources/board.csv", "r")
+        if getattr(sys, 'frozen', False):
+            folder = Path(sys._MEIPASS)
+        else:
+            folder = Path(__file__).parent
+        file = folder/'optimizer/resources/board.csv'
+        f = open(str(file), "r")
         bb = [line.strip().lower() for line in f]
         self.board_from_file = []
         #konwersja csv na listy stringow

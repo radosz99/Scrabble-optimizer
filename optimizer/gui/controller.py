@@ -1,8 +1,6 @@
 from PyQt5.QtCore import QThread, pyqtSignal
 from ..trie.trie import make_trie
 import random
-import string
-import time
 
 class ScrabbleCntrl:
     def __init__(self, model, view):
