@@ -23,3 +23,18 @@ steps:
     python -m pip install --upgrade pip
     pip install -r requirements.txt
   displayName: 'Install dependencies'
+
+- job: "build_wheel"
+  pool:
+    vmImage: 'Ubuntu 18.04'
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: 3.8
+  - script: |
+      python -m pip install setuptools wheel
+      python setup.py bdist_wheel --universal
+    displayName: "Build Python Wheel"
+    continueOnError: false
+  - publish: dist
+    artifact: wheel
