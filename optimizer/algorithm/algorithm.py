@@ -1,4 +1,3 @@
-from collections import OrderedDict 
 from .anagram import find_anagrams
 
 class Algorithm:
@@ -94,7 +93,7 @@ class Algorithm:
         list_of_valid_words=[]
         counter=1
         #ewaluacja ruchow i zapis do listy
-        while(counter!=len(sorted_by_length)+1):     
+        while(counter!=len(sorted_by_length)+1):
             word_to_check=sorted_by_length[len(sorted_by_length)-counter]
             words = self.check_if_valid(word_to_check) 
             for word in words:
@@ -178,10 +177,10 @@ class Algorithm:
     def create_patterns(self):
         self.pattern_board=[]
     
-        pattern_h_board = self.make_patterns(self.board, 'h')
-        pattern_v_board = self.make_patterns(self.transpose_board(self.board),'v')
-        pattern_v_bridges = self.make_brigdes(pattern_v_board)
-        pattern_h_bridges = self.make_brigdes(pattern_h_board)
+        pattern_h_board = self.get_right_angle_patterns(self.board, 'h')
+        pattern_v_board = self.get_right_angle_patterns(self.transpose_board(self.board),'v')
+        pattern_v_bridges = self.get_bridge_patterns(pattern_v_board)
+        pattern_h_bridges = self.get_bridge_patterns(pattern_h_board)
         for pattern in pattern_h_board:
             self.pattern_board.append(pattern)
         for pattern in pattern_v_board:
@@ -295,144 +294,171 @@ class Algorithm:
             transposed_board.append(new_line)
         return transposed_board    
 
-    def make_patterns(self,board, node_orient):
+    def get_right_angle_patterns(self,board, node_orient):
         pattern_board=[]
         for x in range(15):
             for y in range(15):
                 if(board[x][y]!=''):
                     left=False
                     right=False
-                    index_left=0
-                    index_right=0
+                    empty_left_side=0
+                    empty_right_side=0
                     check=False
                     if(y+1>14):
                         check=True
                     elif(board[x][y+1]==''):
                         check=True
                     if((board[x][y-1]=='' or y==0)and check):
-                        #lewo
-                        if(x!=14 and x!=0):
-                            if(board[x-1][y-1]=='' and board[x+1][y-1]==''):
-                                if(board[x][y-2]=='' or y-1==0):
-                                    left=True
-                        elif(x==14):
-                            if(y-1>=0):
-                                if(board[x-1][y-1]==''):
-                                    if(board[x][y-2]=='' or y-1==0):
-                                        left=True
-                        elif(x==0):
-                            if(board[x+1][y-1]==''):
-                                if(board[x][y-2]=='' or y-1==0):
-                                    left=True
-                        #prawo, tu rowniez obslugi, zrobic to z mala iloscia if'ow
-                        if(x!=14 and x!=0 and y!=14):
-                            if(board[x-1][y+1]=='' and board[x+1][y+1]==''):
-                                if(y+1==14):
-                                    right=True
-                                elif(board[x][y+2]==''):
-                                    right=True
-                        elif(x==14):
-                            if(y<14):
-                                if(board[x-1][y+1]==''):
-                                    if(y+1==14):
-                                        right=True
-                                    elif(board[x][y+2]==''):
-                                        right=True
-                        elif(x==0 and y!=14):
-                            if(board[x+1][y+1]==''):
-                                if(y+1==14):
-                                    right=True
-                                elif(board[x][y+2]==''):
-                                    right=True
+                        left = self.check_whether_left_is_possible(x,y,board)
+                        right = self.check_whether_right_is_possible(x,y,board)
+                        
                         if(left==True):
-                            index_left=1
+                            empty_left_side=1
                         if(right==True):
-                            index_right=1
+                            empty_right_side=1
 
-                        if(index_left!=1 and index_right!=1):
+                        if(empty_left_side!=1 and empty_right_side!=1):
                             continue
 
-                        
-                        if(index_left==1):
-                            while(left==True and y-index_left!=0):
-                                state=False
-                                if(x==14):
-                                    state = True
-                                else:
-                                    if(board[x+1][y-1-index_left]==''):
-                                        state = True
-                                
-                                state2=False
-                                if(x==0):
-                                    state2=True
-                                elif(board[x-1][y-1-index_left]==''):
-                                    state2=True
-                                if(state2 and state):
-                                    if(y-1-index_left==0):
-                                        index_left=index_left+1
-                                    elif(board[x][y-2-index_left]==''):
-                                        index_left=index_left+1
-                                    else:
-                                        left=False
-                                else:
-                                    left=False
+                        if(empty_left_side==1):
+                            empty_left_side = self.get_empty_fields_on_the_left(x,y,board)
 
-                        if(index_right==1):
-                            while(right==True and y+index_right!=14):
-                                state=False
-                                if(x==14):
-                                    state = True
-                                elif(y+index_right==14):
-                                    state=True
-                                else:
-                                    if(board[x+1][y+1+index_right]==''):
-                                        state = True
-                                state2=False
-                                if(x==0):
-                                    state2=True
-                                elif(board[x-1][y+1+index_right]==''):
-                                    state2=True
-                                if(state2 and state):
-                                    if(y+1+index_right==14):
-                                        index_right=index_right+1
-                                    elif(board[x][y+2+index_right]==''):
-                                        index_right=index_right+1
-                                    else:
-                                        right=False
-                                else:
-                                    right=False
+                        if(empty_right_side==1):
+                            empty_right_side = self.get_empty_fields_on_the_right(x,y,board)
 
-                        help_index_right = index_right
-                        help_index_left = index_left
-                        if(index_right>7):
+                        help_index_right = empty_right_side
+                        help_index_left = empty_left_side
+                        #maksymalnie 7 liter mozna wlozyc nawet jesli bedzie wiecej miejsca
+                        if(empty_right_side>7):
                             help_index_right=7
-                        if(index_left>7):
+                        if(empty_left_side>7):
                             help_index_left=7
                         
-                        for i in range (help_index_left+1):
-                            right_shift=help_index_right
-                            if(i==0 and help_index_right==0):
-                                continue
-                            if(node_orient=='h'):
-                                coord_x=x
-                                coord_y=y
-                            else:
-                                coord_x=y
-                                coord_y=14-x
-                            if(i+help_index_right>7):
-                                right_shift = right_shift-(i+help_index_right-7)
-                            if(right_shift<0):
-                                right_shift=0
-                            if(y==0):
-                                pattern = (board[x][y].lower(),coord_x,coord_y,0,right_shift,node_orient)
-                            else:
-                                pattern = (board[x][y].lower(),coord_x,coord_y,i,right_shift,node_orient)
+                        patterns = self.make_patterns(help_index_left, help_index_right, node_orient, board, x,y)
+                        for pattern in patterns:
                             pattern_board.append(pattern)
-
 
         return pattern_board
 
-    def make_brigdes(self,pattern_board):
+    def check_whether_left_is_possible(self, x, y, board):
+        if(x!=14 and x!=0):
+            if(board[x-1][y-1]=='' and board[x+1][y-1]==''):
+                if(board[x][y-2]=='' or y-1==0):
+                    return True
+        elif(x==14):
+            if(y-1>=0):
+                if(board[x-1][y-1]==''):
+                    if(board[x][y-2]=='' or y-1==0):
+                        return True
+        elif(x==0):
+            if(board[x+1][y-1]==''):
+                if(board[x][y-2]=='' or y-1==0):
+                    return True
+        return False
+
+    def check_whether_right_is_possible(self,x,y,board):
+        if(x!=14 and x!=0 and y!=14):
+            if(board[x-1][y+1]=='' and board[x+1][y+1]==''):
+                if(y+1==14):
+                    return True
+                elif(board[x][y+2]==''):
+                    return True
+        elif(x==14):
+            if(y<14):
+                if(board[x-1][y+1]==''):
+                    if(y+1==14):
+                        return True
+                    elif(board[x][y+2]==''):
+                        return True
+        elif(x==0 and y!=14):
+            if(board[x+1][y+1]==''):
+                if(y+1==14):
+                    return True
+                elif(board[x][y+2]==''):
+                    return True
+        return False
+
+    def get_empty_fields_on_the_left(self,x,y,board):
+        left=True
+        index_left=1
+        while(left==True and y-index_left!=0):
+            down_empty=False
+            if(x==14):
+                down_empty = True
+            elif(board[x+1][y-1-index_left]==''):
+                down_empty = True
+
+            up_empty=False
+            if(x==0):
+                up_empty=True
+            elif(board[x-1][y-1-index_left]==''):
+                up_empty=True
+
+            if(up_empty and down_empty):
+                #czy doszlo sie do poczatku planszy
+                if(y-1-index_left==0):
+                    index_left=index_left+1
+                elif(board[x][y-2-index_left]==''):
+                    index_left=index_left+1
+                else:
+                    left=False
+            else:
+                left=False
+        return index_left
+
+    def get_empty_fields_on_the_right(self,x,y,board):
+        index_right=1
+        right=True
+        while(right==True and y+index_right!=14):
+            state=False
+            if(x==14):
+                state = True
+            elif(y+index_right==14):
+                state=True
+            elif(board[x+1][y+1+index_right]==''):
+                state = True
+            state2=False
+            if(x==0):
+                state2=True
+            elif(board[x-1][y+1+index_right]==''):
+                state2=True
+            if(state2 and state):
+                if(y+1+index_right==14):
+                    index_right=index_right+1
+                elif(board[x][y+2+index_right]==''):
+                    index_right=index_right+1
+                else:
+                    right=False
+            else:
+                right=False
+        return index_right
+
+    def make_patterns(self, empty_left, empty_right, node_orient, board, x,y):
+        pattern_board=[]
+        for i in range (empty_left+1):
+            right_shift=empty_right
+            if(i==0 and empty_right==0):
+                continue
+            if(node_orient=='h'):
+                coord_x=x
+                coord_y=y
+            elif(node_orient=='v'):
+                coord_x=y
+                coord_y=14-x
+
+            if(i+empty_right>7):
+                right_shift = right_shift-(i+empty_right-7)
+
+            if(right_shift<0):
+                right_shift=0
+            if(y==0):
+                pattern = (board[x][y].lower(),coord_x,coord_y,0,right_shift,node_orient)
+            else:
+                pattern = (board[x][y].lower(),coord_x,coord_y,i,right_shift,node_orient)
+            pattern_board.append(pattern)
+        return pattern_board
+
+    def get_bridge_patterns(self,pattern_board):
         bridge_patterns=[]
         for pattern in pattern_board:
             char = pattern[0]
