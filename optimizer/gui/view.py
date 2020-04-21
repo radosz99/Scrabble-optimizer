@@ -64,12 +64,14 @@ class ScrabbleUi(QMainWindow):
         self.generalLayout.addWidget(self.letter_remaining_lbl)
 
     def load_board_from_file(self):
-        if getattr(sys, 'frozen', False):
-            folder = Path(sys._MEIPASS)
-        else:
-            folder = Path(__file__).parent
-        file = folder/'optimizer/resources/board.csv'
-        f = open(str(file), "r")
+        #for executable
+        # if getattr(sys, 'frozen', False):
+        #     folder = Path(sys._MEIPASS)
+        # else:
+        #     folder = Path(__file__).parent
+        # file = folder/'optimizer/resources/board.csv'
+        # f = open(str(file), "r")
+        f = open('optimizer/resources/board.csv', "r")
         bb = [line.strip().lower() for line in f]
         self.board_from_file = []
         #konwersja csv na listy stringow
