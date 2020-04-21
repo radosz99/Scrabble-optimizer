@@ -24,7 +24,7 @@ steps:
     pip install -r requirements.txt
   displayName: 'Install dependencies'
 - script: |
-    sudo apt-get install libxcb-randr0-dev libxcb-xtest0-dev libxcb-xinerama0-dev libxcb-shape0-dev libxcb-xkb-dev
+    sudo apt-get install libxcb-randr0-dev libxcb-xtest0-dev libxcb-xinerama0-dev libxcb-shape0-dev libxcb-xkb-dev libxkbcommon-x11-0
     export QT_DEBUG_PLUGINS=1
     export QT_QPA_PLATFORM_PLUGIN_PATH=/opt/appname/libs/Qt/plugins/platforms
     ldd /opt/hostedtoolcache/Python/3.7.6/x64/lib/python3.7/site-packages/PyQt5/Qt/plugins/platforms/libqxcb.so
