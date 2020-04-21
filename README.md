@@ -9,21 +9,21 @@ _________________________________
 **<p align="center"> Radoslaw Lis </p>**
 
 # Table of Contents
-- [General info](#desc)
-- [Run](#run)
-- [Technologies](#tech)
-- [Demo ENG](#sc)
-- [Demo PL](#scpl)
-- [Algorithm](#alg)
-  * [Patterns](#pat)
-    * [Right angle](#ang)
-    * [Bridges](#brid)
-  * [Word searching](#word)
-    * [Anagrams](#anag)
-    * [Probably valid words](#prob)
-    * [Valid words](#val)
-  * [Final result](#fin)
-- [Status](#stat)
+- [General info](#desc)  
+- [Run](#run)  
+- [Technologies](#tech)  
+- [Demo ENG](#sc)  
+- [Demo PL](#scpl)  
+- [Algorithm](#alg)  
+  - [Patterns](#pat)  
+    - [Right angle](#ang)  
+    - [Bridges](#brid)  
+  - [Word searching](#word)  
+    - [Anagrams](#anag)  
+    - [Probably valid words](#prob)  
+    - [Valid words](#val)  
+  - [Final result](#fin)  
+- [Status](#stat)  
 
  <a name="desc"></a>
 # General info
@@ -37,8 +37,8 @@ Specify dictionary type (*self.lang* in *controller*), run *main.py*, load dicti
 
 <a name="tech"></a>
 # Technologies
-- Python 3.7,
-- PyQt5.
+- Python 3.7  
+- PyQt5  
 
 
  <a name="sc"></a>
@@ -68,7 +68,7 @@ The algorithm supports the two most popular of the five moves in the game of scr
   <img src="https://i.imgur.com/oaS7aYn.png" width=40% alt="Img"/>
 </p>
 
-According to the official rules of the game, words can be put in the vertical (down) or horizontal (right) direction, which after reverse-transposition of the board (90* counterclockwise, first row is now the previous last column) comes down to treating words that might be put in vertical direction (down) in the same way as words that might be put in horizontal direction (right). This allows to create the patterns for each of the directions by using the same method, remembering only to change the coordinates at the end (*x=y* and *y=14-x*).  
+According to the official rules of the game, words can be put in the vertical (down) or horizontal (right) direction, which after reverse-transposition of the board (90&deg; counterclockwise, first row is now the previous last column) comes down to treating words that might be put in vertical direction (down) in the same way as words that might be put in horizontal direction (right). This allows to create the patterns for each of the directions by using the same method, remembering only to change the coordinates at the end (*x=y* and *y=14-x*).  
 
 <a name="ang"></a>
 ### Right angles (*make_patterns*)
