@@ -28,7 +28,6 @@ steps:
     export QT_DEBUG_PLUGINS=1
     export QT_QPA_PLATFORM_PLUGIN_PATH=/opt/appname/libs/Qt/plugins/platforms
     export QT_QPA_PLATFORM=offscreen
-    python -m pip install setuptools wheel
     python main.py
   displayName: "Build Python Wheel"
   continueOnError: false
