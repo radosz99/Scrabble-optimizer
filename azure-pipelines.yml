@@ -26,6 +26,7 @@ steps:
     export QT_QPA_PLATFORM_PLUGIN_PATH=/opt/appname/libs/Qt/plugins/platforms
   displayName: 'Install dependencies'
 - script: |
+    sudo apt-get install libxcb-randr0-dev libxcb-xtest0-dev libxcb-xinerama0-dev libxcb-shape0-dev libxcb-xkb-dev
     python -m pip install setuptools wheel
     python main.py bdist_wheel --universal
   displayName: "Build Python Wheel"
