@@ -2,7 +2,7 @@
  <a name="stat"></a>
 **<p align="center"> Good Programming Practices </p>**
 _________________________________
-**<p align="center"> Wroclaw University of Science and Technology </p>**
+**<p align="center"> Wrocław University of Science and Technology </p>**
 **<p align="center"> Computer Science, Faculty of Electronics, 6 semester </p>**
 **<p align="center"> Radoslaw Lis </p>**
 
