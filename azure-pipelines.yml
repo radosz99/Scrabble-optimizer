@@ -22,13 +22,11 @@ steps:
 - script: |
     python -m pip install --upgrade pip
     pip install -r requirements.txt
-    export QT_DEBUG_PLUGINS=1
-    export QT_QPA_PLATFORM_PLUGIN_PATH=/opt/appname/libs/Qt/plugins/platforms
   displayName: 'Install dependencies'
 - script: |
-    python -m pip install setuptools wheel
-    python main.py bdist_wheel --universal
+    sudo apt-get install libxcb-randr0-dev libxcb-xtest0-dev libxcb-xinerama0-dev libxcb-shape0-dev libxcb-xkb-dev libxkbcommon-x11-0
+    export QT_DEBUG_PLUGINS=1
+    export QT_QPA_PLATFORM_PLUGIN_PATH=/opt/appname/libs/Qt/plugins/platforms
+    export QT_QPA_PLATFORM=offscreen
   displayName: "Build Python Wheel"
   continueOnError: false
-- publish: dist
-  artifact: wheel
