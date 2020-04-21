@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/db5a9cfd97ed47d3a761c98c3e9ae34b)](https://app.codacy.com/manual/radosz99/Scrabble-optimizer?utm_source=github.com&utm_medium=referral&utm_content=radosz99/Scrabble-optimizer&utm_campaign=Badge_Grade_Dashboard)
  [![Build Status](https://dev.azure.com/241385/241385/_apis/build/status/radosz99.Scrabble-optimizer?branchName=master)](https://dev.azure.com/241385/241385/_build/latest?definitionId=1&branchName=master)
  ![Python application](https://github.com/radosz99/Scrabble-optimizer/workflows/Python%20application/badge.svg)
  <a name="stat"></a>
