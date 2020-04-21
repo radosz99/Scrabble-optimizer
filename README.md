@@ -9,21 +9,21 @@ _________________________________
 **<p align="center"> Radoslaw Lis </p>**
 
 # Table of Contents
-- [General info](#desc)
-- [Run](#run)
-- [Technologies](#tech)
-- [Demo ENG](#sc)
-- [Demo PL](#scpl)
-- [Algorithm](#alg)
-  *  [Patterns](#pat)
-     *  [Right angle](#ang)
-     *  [Bridges](#brid)
-  *  [Word searching](#word)
-     *  [Anagrams](#anag)
-     *  [Probably valid words](#prob)
-     *  [Valid words](#val)
-  *  [Final result](#fin)
-- [Status](#stat)
+- [General info](#desc)  
+- [Run](#run)  
+- [Technologies](#tech)  
+- [Demo ENG](#sc)  
+- [Demo PL](#scpl)  
+- [Algorithm](#alg)  
+  - [Patterns](#pat)  
+    - [Right angle](#ang)  
+    - [Bridges](#brid)  
+  - [Word searching](#word)  
+    - [Anagrams](#anag)  
+    - [Probably valid words](#prob)  
+    - [Valid words](#val)  
+  - [Final result](#fin)  
+- [Status](#stat)  
 
  <a name="desc"></a>
 # General info
@@ -37,8 +37,8 @@ Specify dictionary type (*self.lang* in *controller*), run *main.py*, load dicti
 
 <a name="tech"></a>
 # Technologies
-- Python 3.7,
-- PyQt5.
+- Python 3.7  
+- PyQt5  
 
 
  <a name="sc"></a>
@@ -60,7 +60,7 @@ The algorithm supports the two most popular of the five moves in the game of scr
  <a name="pat"></a>
  ## Patterns (*create_patterns*)
  Suppose that board looks like below (*.../optimizer/resources/board2.csv*) and letters that the user currently has are:
-  ```
+  ```{flags: Array}
   g k ę p u ź i
   ```
   
@@ -68,18 +68,18 @@ The algorithm supports the two most popular of the five moves in the game of scr
   <img src="https://i.imgur.com/oaS7aYn.png" width=40% alt="Img"/>
 </p>
 
-According to the official rules of the game, words can be put in the vertical (down) or horizontal (right) direction, which after reverse-transposition of the board (90* counterclockwise, first row is now the previous last column) comes down to treating words that might be put in vertical direction (down) in the same way as words that might be put in horizontal direction (right). This allows to create the patterns for each of the directions by using the same method, remembering only to change the coordinates at the end (*x=y* and *y=14-x*).  
+According to the official rules of the game, words can be put in the vertical (down) or horizontal (right) direction, which after reverse-transposition of the board (90&deg; counterclockwise, first row is now the previous last column) comes down to treating words that might be put in vertical direction (down) in the same way as words that might be put in horizontal direction (right). This allows to create the patterns for each of the directions by using the same method, remembering only to change the coordinates at the end (*x=y* and *y=14-x*).  
 
 <a name="ang"></a>
 ### Right angles (*make_patterns*)
 At the beginning, appropriate patterns are created, generally representing the word, which can be put on the board. First, the simplest patterns (so-called **right angles**) are created, which contain only one letter from the board. Their structures look like this:
-  ```
+  ```{flags: Array}
   ('ż', 1, 9, 6, 2, 'h')
   ```
 First element is the letter, second and third are coordinates x and y respectively, fourth and fifth are the number of free fields on the left and right respectively. The last one is direction in which word can be put (*h* - horizontal, *v* - vertical). Creating patterns involves checking each letter of empty fields on the left and on the right. If it has at least one available field on any side, it is saved - with the other needed elements - in the pattern. 
 
 After scanning the board, the following patterns of right angle type were created: 
- ```
+ ```{flags: Array}
 ('ż', 1, 9, 6, 2, 'h'), ('ż', 2, 2, 2, 5, 'h'), ('u', 2, 9, 5, 1, 'h'), ('d', 2, 12, 1, 2, 'h'), 
 ('a', 3, 2, 2, 5, 'h'), ('i', 3, 12, 0, 2, 'h'), ('n', 5, 12, 0, 2, 'h'), ('a', 8, 5, 5, 0, 'h'), 
 ('a', 8, 10, 0, 1, 'h'), ('ć', 9, 5, 5, 4, 'h'), ('ź', 7, 14, 7, 7, 'v'), ('e', 7, 13, 0, 7, 'v'), 
@@ -90,13 +90,13 @@ After scanning the board, the following patterns of right angle type were create
 <a name="brid"></a>
 ### Bridges (*make_brigdes*)
 Creating bridges involves searching through previously created patterns and checking if there are any that are in the same column (vertical direction) or in the same row (horizontal direction). If so, it is checked if they can be connect - sufficient number of free fields and not too large distance separating them. Their structures look like this:
-  ```
+  ```{flags: Array}
 ('kh', 4, 8, 0, 5, 'v', 3)
   ```
 At the beginning there are letters representing the bridge, then the coordinates of the letter which is more left in the case of horizontal direction or more down in the case of vertical direction. Then we have empty fields on the left and on the right (or top and bottom in the case of vertical direction), next we have direction and difference in letter coordinates. The difference here is the specific number of empty fields, which is calculated on the basis of the empty fields of both right angle patterns and the difference between their coordinates.
 
 After scanning, the list of bridges is as follows:
-  ```
+  ```{flags: Array}
 ('kh', 4, 8, 0, 5, 'v', 3), ('ud', 2, 9, 5, 0, 'h', 3), ('ud', 2, 9, 1, 2, 'h', 3), ('ud', 2, 9, 4, 1, 'h', 3),
 ('żu', 2, 2, 0, 1, 'h', 7), ('ud', 2, 9, 3, 2, 'h', 3), ('żu', 2, 2, 1, 0, 'h', 7), ('ud', 2, 9, 0, 2, 'h', 3),
 ('ud', 2, 9, 2, 2, 'h', 3) 
@@ -110,11 +110,11 @@ Word search is divided into three stages, in which more and more accurate select
 From the user letters and properly converted letters contained in the patterns (i.e. from the board) one string is created, which is the basis for searching for words (anagrams), which will then be selected.  
 
 In this case the string of letters is as follows:
-```
+```{flags: Array}
 g k ę p u ź i | i u ź k e ż h ę a d t ć n
 ```
 The words from the dictionary are stored in a special structure of data (*trie*), thanks to which the search for anagrams takes place in a relatively short time. For this set of letters program returned 1677 anagrams:
-```
+```{flags: Array}
 ['ad', 'adenkę', 'adenki', [...], 'gandżę', 'ganek', 'gani', [...], 'napitku', 'nat', 'natek', [...], 'pienika', 'pieniku', 'pieniu',  [...], 'żupniku', 'żuta', 'żute']
 ```
 <a name="prob"></a>
@@ -122,7 +122,7 @@ The words from the dictionary are stored in a special structure of data (*trie*)
 At this stage, the anagrams undergo appropriate selection to get rid of words that definitely can't be put on the board. The whole process is complex - including checking whether the word contains at least one letter from the board, checking whether the word contains at least one user letter and checking whether the word contains more than two letters (maximum number of letters in the bridge), which do not belong to the user's letters (if so, the word does not meet the requirements).  
 
 After all anagrams have gone through this process, the program now contains 249 possible words (sorted by the shortest):
-```
+```{flags: Array}
 ['ag', 'au', 'gę', 'gu', 'hę', 'hi', 'hu', 'id', 'ii', 'in', 'iż', 'ka', 'ki', 'ku', 'ni', 'nu', 'pa', 'pe', 'pi', 'tę', 'tu', 'ud', 'ut', 'uu', 'agę', 'agi', 'dęg', 'dip', 'dug', 'dup', 'gai', 'gap', 'ghi', 'gid', 'gie', 'gik', 'gin', 'git', 'gnę', 'gnu', 'gżę', 'hip', 'huk', 'idę', 'idu', 'idź', 'ikt', 'ink', 'kap', 'kaź', 'keg', 'kei', 'kęp', 'kia', 'kić', 'kie', 'kię', 'kii', 'kin', 'kip', 'kit', 'kiź', 'kpa', 'kpi', 'kuć', 'kuk', 'kun', 'kup', 'nip', 'pai', 'pak', 'paź', 'pęd', 'pęk', 'pęt', 'phi', 'phu', 'pia', 'pić', 'pie', 'pik', 'pin', 'pit', 'piu', 'pnę', 'pni', 'pud', 'puh', 'puk', 'pun', 'tęp', 'tik', 'tiu', 'tui', 'tuk', 'tup', 'utę', 'uti', 'źga', 'żuk', 'żup', 'agiu', 'aigu', 'akię', 'dęgi', 'dipu', 'diuk', 'dugę', 'dugi', 'dupę', 'ekip', 'epik', 'gaik', 'gapę', 'gapi', 'gięć', 'giki', 'giku', 'ginę', 'ginu', 'guni', 'huki', 'iktu', 'inkę', 'inku', 'kagu', 'kapę', 'kapu', 'kegę', 'kegi', 'kegu', 'kepi', 'kępa', 'kępę', 'kiep', 'kinę', 'king', 'kinu', 'kipa', 'kipę', 'kipi', 'kipu', 'kitę', 'kitu', 'kpić', 'kpie', 'kpię', 'kpin', 'kuki', 'kunę', 'kuni', 'kupa', 'kupę', 'kupi', 'kupn', 'ngui', 'nipę', 'pakę', 'paki', 'paku', 'pędu', 'pędź', 'pęka', 'pęki', 'pęku', 'pętu', 'pieg', 'pięć', 'pięt', 'pika', 'pikę', 'piki', 'piku', 'pink', 'pinu', 'pitę', 'pniu', 'puhę', 'puka', 'pukę', 'puki', 'puku', 'punę', 'punk', 'tęgi', 'tępi', 'tikę', 'tiku', 'tukę', 'tuki', 'tupi', 'ugnę', 'ukap', 'unię', 'unik', 'upęd', 'upić', 'upnę', 'źgnę', 'żuki', 'żupę', 'dupkę', 'dupki', 'ekipę', 'epikę', 'epiku', 'gaiku', 'gapię', 'gapiu', 'gunię', 'gupik', 'hipku', 'kapię', 'kępie', 'kępin', 'kępki', 'kingu', 'kipię', 'kipnę', 'kpinę', 'kupić', 'kupie', 'kupię', 'kupkę', 'kupki', 'kupni', 'kutię', 'kuźni', 'pętku', 'piegu', 'piekę', 'piędź', 'piknę', 'pikut', 'pinkę', 'pinku', 'puknę', 'punki', 'tupię', 'ugięć', 'upiek', 'upięć', 'gupika', 'gupiki', 'gupiku', 'kuźnię', 'pięknu', 'ukapię', 'upiekę']
 ```
 
