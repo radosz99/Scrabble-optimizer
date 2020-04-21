@@ -30,5 +30,3 @@ steps:
     export QT_QPA_PLATFORM=offscreen
   displayName: "Build Python Wheel"
   continueOnError: false
-- publish: dist
-  artifact: wheel
