@@ -25,7 +25,7 @@ class Algorithm:
             best=''
             points=0
             str_other_best_valid=''
-            letters_not_used=[]
+            letters_not_used=self.letters
 
         return self.board, (best,points), str_other_best_valid,letters_not_used
 
